@@ -6,6 +6,7 @@
 #include<unistd.h>
 #include<stdint.h>
 #include<malloc.h>
+#include<string.h>
 #define RED   1
 #define BLACK 0
 typedef struct node__{
@@ -27,5 +28,8 @@ node_t *node_insert(node_t *n,int key,void *value);
 node_t *create_node();
 node_t *right_rotate(node_t *n);
 node_t *left_rotate(node_t *n);
+bool is_red(node_t *n);
 void flip_color(node_t *n);
+void tree_inorder(rbt_t *t);
+void inorder(node_t *n);
 #endif

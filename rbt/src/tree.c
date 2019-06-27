@@ -13,6 +13,11 @@ node_t *create_node(){
     return n;
 }
 
+bool is_red(node_t *n){
+    if(n == NULL) return false;
+    return (n->color == RED);
+}
+
 node_t *node_insert(node_t *n,int key,void *value){
     node_t *new;
     if(n == NULL){
@@ -26,6 +31,9 @@ node_t *node_insert(node_t *n,int key,void *value){
     else if(n->key < key) n->right = node_insert(n->right,key,value);
     else n->value = value;
 
+    if(is_red(n->right) && !is_red(n->left)) n = left_rotate(n);
+    if(n->left && n->left->left && is_red(n->left) && is_red(n->left->left))n = right_rotate(n);
+    if(is_red(n->right) && is_red(n->left)) flip_color(n);
     return n;
 }
 
@@ -41,12 +49,48 @@ void *tree_insert(rbt_t *tree,int key,void *value){
     return NULL;
 }
 
-node_t *right_rotate(node_t *n){
+void flip_color(node_t *n){
+    n->color = RED;
+    if(n->left){
+        n->left->color = BLACK;
+    }
+    if(n->right){
+        n->right->color = BLACK;
+    }
 }
 
 node_t *left_rotate(node_t *n){
+    node_t *h = n;
+    node_t *x = n->right;
+    h->right = x->left;
+    x->left = h;
+    x->color = h->color;
+    h->color = RED;
+    return x;
 }
 
+node_t *right_rotate(node_t *n){
+    node_t *h = n;
+    node_t *x = n->left;
+    h->left = x->right;
+    x->right = h;
+    x->color = h->color;
+    h->color = RED;
+    return x;
+
+}
+
+
+void inorder(node_t *n){
+    if(n == NULL) return;
+    inorder(n->left);
+    printf("%d,",n->key);
+    inorder(n->right);
+}
+
+void tree_inorder(rbt_t *t){
+    inorder(t->root);
+}
 
 node_t *node_get(node_t *n,int key){
     if(n == NULL) return NULL;
