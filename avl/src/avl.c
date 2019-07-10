@@ -41,6 +41,44 @@ node_t *left_rotate(node_t *n){
 
 }
 
+node_t *get_min_node(node_t *n){
+    node_t *curr = n;
+    while(curr->left != NULL){
+        curr = curr->left;
+    }
+    return curr;
+}
+node_t * node_delete(node_t *root,int key){
+    node_t *tmp = NULL;
+    if(root == NULL) return NULL;
+    if(key < root->key){
+        root->left = node_delete(root->left,key);
+    }else if(key > root->key){
+        root->right = node_delete(root->right,key);
+    }else{
+        if(root->left == NULL || root->right == NULL){
+            tmp = root->left ? root->left : root->right;
+            if(tmp == NULL){
+                tmp = root;
+                root = NULL;
+            }else{
+                *root = *tmp;
+            }
+            free(tmp->value);
+            free(tmp);
+        }else{
+            tmp = get_min_node(root->right);
+            free(root->value);
+            root->value = tmp->value;
+            root->key = tmp->key;
+            root->right = node_delete(root->right,tmp->key);
+        }
+    }
+    if(root == NULL) return root;
+    root->height = 1+(height(root->left) > height(root->right) ? height(root->left): height(root->right));
+
+
+}
 node_t *node_insert(node_t *n,int key,void *value){
     int b = 0;
     if(n == NULL){

@@ -25,4 +25,6 @@ node_t *left_rotate(node_t *n);
 int balance(node_t *n);
 void tree_inorder(tree_t *t);
 void node_inorder(node_t *n);
+node_t *get_min_node(node_t *n);
+node_t *node_delete(node_t *root,int key);
 #endif
