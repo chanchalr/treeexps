@@ -50,6 +50,7 @@ node_t *get_min_node(node_t *n){
 }
 node_t * node_delete(node_t *root,int key){
     node_t *tmp = NULL;
+    int b = 0;
     if(root == NULL) return NULL;
     if(key < root->key){
         root->left = node_delete(root->left,key);
@@ -64,11 +65,11 @@ node_t * node_delete(node_t *root,int key){
             }else{
                 *root = *tmp;
             }
-            free(tmp->value);
+            //free(tmp->value);
             free(tmp);
         }else{
             tmp = get_min_node(root->right);
-            free(root->value);
+            //free(root->value);
             root->value = tmp->value;
             root->key = tmp->key;
             root->right = node_delete(root->right,tmp->key);
@@ -76,8 +77,22 @@ node_t * node_delete(node_t *root,int key){
     }
     if(root == NULL) return root;
     root->height = 1+(height(root->left) > height(root->right) ? height(root->left): height(root->right));
-
-
+    b = balance(root);
+    if((b > 1) && balance(root->left) >=0){
+        return right_rotate(root);
+    }
+    if((b > 1) && balance(root->left) < 0){
+        root->left = left_rotate(root->left);
+        return right_rotate(root);
+    }
+    if((b < -1) && balance(root->right) <= 0){
+        return left_rotate(root);
+    }
+    if((b < -1) && balance(root->right) > 0){
+        root->right = right_rotate(root->right);
+        return left_rotate(root);
+    }
+    return root;
 }
 node_t *node_insert(node_t *n,int key,void *value){
     int b = 0;
@@ -115,6 +130,10 @@ node_t *node_insert(node_t *n,int key,void *value){
 
 }
 
+void tree_delete(tree_t *t,int key){
+    t->root = node_delete(t->root,key);
+}
+
 void tree_insert(tree_t *t,int key,void *value){
     t->root = node_insert(t->root,key,value);
     t->count++;
@@ -141,8 +160,8 @@ int main(){
     tree_t *t = (tree_t *)malloc(sizeof(tree_t));
     t->root = NULL;
     t->count = 0;
-    for(i=0;i<20480;i++){
-        tree_insert(t,rand()%1000000,NULL);
+    for(i=0;i<1024;i++){
+        tree_insert(t,rand()%2048,NULL);
     }
     tree_inorder(t);
     printf("height:%d count:%d\n",t->root->height,t->count);
